@@ -137,9 +137,9 @@ function resetGame() {
         pipe.pipeBottom.remove();
     });
     pipes = [];
-    birdBottom = 250; // Reset bird position
+    birdBottom = 250;
     birdVelocity = 0;
-    updateScore(); // Update score display
+    updateScore();
 }
 
 function checkCollision(pipe) {
@@ -172,7 +172,7 @@ function checkCollision(pipe) {
 }
 
 function gameLoop() {
-    if (!gameStarted) return; // Stop the game loop if the game hasn't started
+    if (!gameStarted) return;
 
     moveBird();
     movePipes();
