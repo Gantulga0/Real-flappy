@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-color: white;
+}
+
+#game {
+    height: 500px;
+    width: 400px;
+    border: 1px solid red;
+    overflow: hidden;
+    position: relative;
+}
+
+#background {
+    height: 500px;
+    width: 400px;
+    object-fit: cover;
+}
+
+#score{
+    position: absolute;
+    top: 0;
+    color: white;
+    font-size: 25gitpx;
+    z-index: 2;
+}
+
+#bird {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: red;
+    left: 50px;
+    bottom: 200px;
+    border-radius: 50%;
+}
+
+.pipe {
+    position: absolute;
+    width: 50px;    
+    background-color: rgb(0, 168, 0);
+}
+
+.pipe-top {
+    position: absolute;
+    top: 0;
+}
+
+.pipe-bottom {
+    position: absolute;
+    bottom: 0;
+}
