@@ -15,11 +15,15 @@ let jumpSound = document.getElementById("jumpsound");
 let pointSound = document.getElementById("scoresound");
 let gameOverSound = document.getElementById("deathsound");
 
+let gameStarted = false; // New flag to check if the game has started
+
 function updateScore() {
     scoreDisplay.textContent = `score: ${score}`;
 }
 
 function createPipe() {
+    if (!gameStarted) return; // Prevent creating pipes before the game starts
+    
     const gapHeight = 150;
     const containerHeight = 500;
 
@@ -56,6 +60,8 @@ function createPipe() {
 }
 
 function movePipes() {
+    if (!gameStarted) return; // Prevent moving pipes before the game starts
+
     pipes.forEach((pipe, index) => {
         let pipe1Left = parseInt(window.getComputedStyle(pipe.pipeTop).getPropertyValue("left"));
 
@@ -82,6 +88,8 @@ function movePipes() {
 }
 
 function moveBird() {
+    if (!gameStarted) return; // Prevent moving bird before the game starts
+
     birdVelocity -= gravity;
     birdBottom += birdVelocity;
 
@@ -101,7 +109,14 @@ function moveBird() {
 }
 
 function birdJump() {
-    if (birdBottom > 0 && !isGameOver) {
+    if (isGameOver) {
+        // Reset game if it's over
+        resetGame();
+    } else if (!gameStarted) {
+        // Start the game on the first tap
+        gameStarted = true;
+        gameLoop(); // Start the game loop
+    } else if (birdBottom > 0 && !isGameOver) {
         birdVelocity = 8;
         jumpSound.play();
     }
@@ -111,6 +126,20 @@ function endGame() {
     isGameOver = true;
     gameOverSound.play();
     alert(`Game Over! Final Score: ${score}`);
+}
+
+function resetGame() {
+    isGameOver = false;
+    gameStarted = false;
+    score = 0;
+    pipes.forEach(pipe => {
+        pipe.pipeTop.remove();
+        pipe.pipeBottom.remove();
+    });
+    pipes = [];
+    birdBottom = 250; // Reset bird position
+    birdVelocity = 0;
+    updateScore(); // Update score display
 }
 
 function checkCollision(pipe) {
@@ -143,7 +172,7 @@ function checkCollision(pipe) {
 }
 
 function gameLoop() {
-    if (isGameOver) return;
+    if (!gameStarted) return; // Stop the game loop if the game hasn't started
 
     moveBird();
     movePipes();
@@ -152,7 +181,6 @@ function gameLoop() {
 }
 
 document.body.addEventListener("click", birdJump);
-
 document.body.addEventListener("keydown", (event) => {
     if (event.key === " " || event.key === "Spacebar") {
         birdJump();
@@ -160,9 +188,7 @@ document.body.addEventListener("keydown", (event) => {
 });
 
 setInterval(() => {
-    if (!isGameOver) {
+    if (gameStarted && !isGameOver) {
         createPipe();
     }
 }, 2000);
-
-gameLoop();
