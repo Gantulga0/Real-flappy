@@ -2,8 +2,8 @@ let bird = document.getElementById("bird");
 let gameContainer = document.getElementById("game");
 let scoreDisplay = document.getElementById("score");
 
-let birdVelocity = 0;
-let gravity = 0.5;
+let birdVelocity = 8;
+let gravity = 0.2;
 let birdHeight = parseInt(window.getComputedStyle(bird).getPropertyValue("height"));
 let birdBottom = parseInt(window.getComputedStyle(bird).getPropertyValue("bottom"));
 let isGameOver = false;
@@ -15,14 +15,14 @@ let jumpSound = document.getElementById("jumpsound");
 let pointSound = document.getElementById("scoresound");
 let gameOverSound = document.getElementById("deathsound");
 
-let gameStarted = false; // New flag to check if the game has started
+let gameStarted = false;
 
 function updateScore() {
     scoreDisplay.textContent = `score: ${score}`;
 }
 
 function createPipe() {
-    if (!gameStarted) return; // Prevent creating pipes before the game starts
+    if (!gameStarted) return;
     
     const gapHeight = 150;
     const containerHeight = 500;
@@ -60,7 +60,7 @@ function createPipe() {
 }
 
 function movePipes() {
-    if (!gameStarted) return; // Prevent moving pipes before the game starts
+    if (!gameStarted) return;
 
     pipes.forEach((pipe, index) => {
         let pipe1Left = parseInt(window.getComputedStyle(pipe.pipeTop).getPropertyValue("left"));
@@ -70,11 +70,11 @@ function movePipes() {
             pipe.pipeBottom.remove();
             pipes.splice(index, 1);
         } else {
-            pipe.pipeTop.style.left = `${pipe1Left - 2}px`;
-            pipe.pipeBottom.style.left = `${pipe1Left - 2}px`;
+            pipe.pipeTop.style.left = `${pipe1Left - 1.5}px`;
+            pipe.pipeBottom.style.left = `${pipe1Left - 1.5}px`;
         }
 
-        if (pipe1Left < birdHeight && !pipe.scored) {
+        if (pipe1Left < parseInt(window.getComputedStyle(bird).getPropertyValue("width")) && !pipe.scored) {
             score++;
             pipe.scored = true;
             pointSound.play()
@@ -88,7 +88,7 @@ function movePipes() {
 }
 
 function moveBird() {
-    if (!gameStarted) return; // Prevent moving bird before the game starts
+    if (!gameStarted) return;
 
     birdVelocity -= gravity;
     birdBottom += birdVelocity;
@@ -110,14 +110,12 @@ function moveBird() {
 
 function birdJump() {
     if (isGameOver) {
-        // Reset game if it's over
         resetGame();
     } else if (!gameStarted) {
-        // Start the game on the first tap
         gameStarted = true;
-        gameLoop(); // Start the game loop
+        gameLoop();
     } else if (birdBottom > 0 && !isGameOver) {
-        birdVelocity = 8;
+        birdVelocity = 6;
         jumpSound.play();
     }
 }
@@ -144,26 +142,20 @@ function resetGame() {
 
 function checkCollision(pipe) {
     const birdLeft = parseInt(window.getComputedStyle(bird).getPropertyValue("left"));
-    const birdRight = birdLeft + birdHeight;
+    const birdRight = birdLeft + parseInt(window.getComputedStyle(bird).getPropertyValue("width"));
 
     const pipeLeft = parseInt(window.getComputedStyle(pipe.pipeTop).getPropertyValue("left"));
     const pipeRight = pipeLeft + 50;
     const gapHeight = 150;
     const containerHeight = 500;
-    const birdBottomPos = containerHeight - birdBottom;
-    const birdTop = containerHeight - (birdBottom + birdHeight);
+    const birdBottomPos = birdBottom;
+    const birdTop = birdBottom + birdHeight;
 
     const topPipeHeight = parseInt(window.getComputedStyle(pipe.pipeTop).getPropertyValue("height"));
     const bottomPipeHeight = containerHeight - gapHeight - topPipeHeight;
 
     if (birdRight >= pipeLeft && birdLeft <= pipeRight) {
-        if (birdTop <= topPipeHeight) {
-            return true;
-        }
-    }
-
-    if (birdRight >= pipeLeft && birdLeft <= pipeRight) {
-        if (birdBottomPos >= containerHeight - bottomPipeHeight) {
+        if (birdTop >= containerHeight - topPipeHeight || birdBottomPos <= bottomPipeHeight) {
             return true;
         }
     }
@@ -172,7 +164,7 @@ function checkCollision(pipe) {
 }
 
 function gameLoop() {
-    if (!gameStarted) return;
+    if (isGameOver) return;
 
     moveBird();
     movePipes();
@@ -191,4 +183,4 @@ setInterval(() => {
     if (gameStarted && !isGameOver) {
         createPipe();
     }
-}, 2000);
+}, 1000);
